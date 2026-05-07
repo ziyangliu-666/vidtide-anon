@@ -1,0 +1,39 @@
+# Byte-compiled / optimised
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# IDE / editor
+.idea/
+.vscode/
+.DS_Store
+
+# Local data (videos are recovered from source URLs at eval time and never committed)
+data/
+downloads/
+checkpoints/
+*.mp4
+*.webm
+*.mkv
+*.db
+*.db-journal
+
+# Logs / results
+logs/
+results/
+*.log
+
+# Secrets
+.env
+*.env
+*cookies*

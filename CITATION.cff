@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, please cite the accompanying paper."
+title: "VidTide: A Living In-the-Wild Benchmark for Measuring the Static-Benchmark Gap in AI-Generated Video Detection"
+authors:
+  - family-names: Anonymous
+    given-names: Anonymous
+    note: "Author identities withheld for double-blind submission to NeurIPS 2026 Datasets & Benchmarks Track. Full citation will be provided in the camera-ready version."
+year: 2026
+license: MIT

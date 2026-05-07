@@ -1,0 +1,54 @@
+# VidTide pipeline configuration template.
+# Copy to `pipeline.yaml` and edit per environment. All keys are dashboard-editable
+# in the live demo; this file is the source of truth for headless / CI runs.
+
+crawlers:
+  youtube:
+    enabled: true
+    max_videos: 200
+    queries:
+      - "AI generated video"
+      - "made with Sora"
+      - "Veo 3"
+      - "Kling 2.1"
+    duration_range_sec: [3, 60]
+  bilibili:
+    enabled: true
+    max_videos: 500
+    queries:
+      - "AI 生成视频"
+      - "可灵 AI"
+      - "即梦 AI"
+    require_argue_info_tag: true
+    duration_range_sec: [3, 120]
+  reddit:
+    enabled: true
+    subreddits: [aivideo, sora, StableDiffusion]
+    max_videos: 100
+  showcase:
+    enabled: true
+    galleries: [pika, kling, runway, dreamina]
+
+filters:
+  quality:
+    min_resolution: [480, 360]   # [w, h]
+    min_duration_sec: 3
+    max_duration_sec: 120
+    min_fps: 12
+  tag:
+    tiers_accepted: [1, 2, 3]
+  llm:
+    enabled: true
+    model: gpt-4o-mini
+    confidence_threshold: 0.7
+
+dedup:
+  encoder: clip_vit_b32
+  num_keyframes: 8
+  cosine_threshold: 0.92
+  prefer_higher_tier: true
+
+publish:
+  hf_repo: <anonymised-for-double-blind>
+  monthly_slice_prefix: "M"
+  redistribute_video_files: false   # metadata + download script only
