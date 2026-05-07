@@ -1,0 +1,408 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "cr:samplingRate",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "VidTide-M0",
+  "description": "VidTide is an in-the-wild living benchmark for AI-generated video detection. M0 is the frozen submission slice (2026-04): 22,869 video records harvested from YouTube, Bilibili, Reddit, and official model showcase galleries, labelled by a three-tier provenance taxonomy (T1 official galleries; T2 platform AI-disclosure tags; T3 keyword + LLM verification). Each record carries the original platform URL; videos are recovered from the URL at evaluation time and are not redistributed (VidProM precedent). The benchmark is updated monthly; M0 is immutable.",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "citeAs": "@misc{vidtide_m0_2026, title={{VidTide}: A Living In-the-Wild Benchmark for Measuring the Static-Benchmark Gap in AI-Generated Video Detection}, author={Anonymous}, year={2026}, note={NeurIPS 2026 Datasets and Benchmarks Track submission (under double-blind review). Anonymous code repository: https://anonymous.4open.science/r/vidtide-anon-C0B8/}}",
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "url": "https://anonymous.4open.science/r/vidtide-anon-C0B8/",
+  "version": "1.0.0",
+  "datePublished": "2026-04-15",
+  "creator": {
+    "@type": "sc:Organization",
+    "name": "Anonymous (NeurIPS 2026 D&B double-blind submission)"
+  },
+  "publisher": {
+    "@type": "sc:Organization",
+    "name": "Anonymous (NeurIPS 2026 D&B double-blind submission)"
+  },
+  "keywords": [
+    "AI-generated video detection",
+    "deepfake detection",
+    "benchmark",
+    "in-the-wild",
+    "living benchmark",
+    "video forensics",
+    "rolling evaluation"
+  ],
+  "isLiveDataset": true,
+  "rai:dataCollection": "Continuous automated crawl of four source platforms (YouTube, Bilibili, Reddit, official generator showcase galleries). Each per-platform crawler uses public APIs or yt-dlp search; AI-generated candidates are surfaced via (T1) official-vendor showcase scrapers, (T2) platform-mandated AI-disclosure tags (YouTube AI-disclosure since 2024, Bilibili `argue_info` tag enforcing the China AI-labelling regulation since Sept 2025, TikTok C2PA), and (T3) title/description keyword match followed by GPT-4o-mini semantic verification. The full M0 frozen slice (22,869 records) was crawled between 2026-02 and 2026-04. The pipeline operates at approximately 156 USD per month in standard mode.",
+  "rai:dataAnnotation": "Labels (real / fake) are not crowd-sourced; they are derived from platform-native AI-disclosure metadata and from official-gallery provenance. A subset (n=900) was independently re-annotated by three trained graduate research assistants for label-quality auditing; pairwise Cohen's kappa was 0.93 with a 0.6 percent clear-error rate. Annotators were compensated at standard institutional rates above local minimum wage.",
+  "rai:dataPreprocessingProtocol": "Crawl candidates pass through (i) a quality filter (resolution / duration / fps thresholds), (ii) a tag-tier filter (T1 / T2 / T3 gating), (iii) GPT-4o-mini title/description verification (separating actual AI-generated clips from tutorials about AI), (iv) CLIP-based perceptual deduplication (ViT-B/32 embeddings, cosine threshold 0.92, prefer-higher-tier conflict resolution), and (v) a Cleanlab-based label-quality audit. Per-clip SHA-256 is computed at crawl time and stored for re-download integrity verification.",
+  "rai:dataReleaseMaintenancePlan": "M0 is the frozen submission slice; subsequent monthly slices (M1, M2, ...) will be appended as immutable additions and will not modify M0. A 24-hour opt-out flow is provided via the anonymous repository's issue tracker during double-blind review (and a persistent contact endpoint after acceptance); manifest deletion immediately revokes the clip from all reproduced slices. Errata are tracked additively in per-slice ERRATA.md files and never overwrite frozen records.",
+  "rai:personalSensitiveInformation": "Records contain only public platform metadata (platform-issued URL, platform-issued ID, uploader-supplied title and tags) plus crawl-time SHA-256 of the video bytes. No personally identifiable information is added by the dataset; uploader handles are not reproduced as separate fields. Faces in source videos are not extracted, augmented, or otherwise processed; the dataset is intended for detection-pipeline benchmarking, not biometric study.",
+  "rai:dataLimitations": "(i) Tier-2 ground truth depends on platforms enforcing AI-disclosure correctly; we measure label noise at 0.6 percent clear errors. (ii) M0 is Bilibili-dominant (84.7 percent); YouTube (n=461) and Reddit (n=2,556) sub-pools constrain cross-platform claims. (iii) Generator identity is unknown for 81.5 percent of fake-labelled clips. (iv) The Kinetics-400 real subset (n=500, 3.9 percent) exhibits domain shift relative to platform-native real content. (v) Probe metadata (resolution, fps) is incomplete on early Bilibili crawls.",
+  "rai:dataBiases": "Platform composition skew toward Bilibili reflects Chinese-language AI-video prevalence on that platform combined with the Sept-2025 China AI-labelling regulation enforcement. Generator distribution is heavy-tailed and dominated by Kling 2.x and other 2025--2026 frontier diffusion models; older GAN-era generators are under-represented and should not be evaluated against M0 in isolation. Topic distribution skews toward short-form entertainment content (vtuber, dance, anime stylisation), reflecting the consumer-facing AI-video deployment pattern at submission time.",
+  "rai:dataSocialImpact": "Improved AI-video detection serves public trust by enabling defenders (platforms, fact-checkers, courts) to keep pace with generator evolution. Open evaluation of detector robustness benefits the defender community more than attackers, since attackers already operate adaptively against any deployed detector. The metadata-only release model avoids amplifying redistribution of synthetic media.",
+  "rai:dataUseCases": "(i) Benchmarking AI-generated video detectors against in-the-wild content. (ii) Measuring the static-benchmark overestimation gap (lab benchmark AUROC minus in-the-wild AUROC). (iii) Studying generator-level and platform-level detection blind spots (including platform re-encoding confounds). (iv) Training data for fine-tuning standard video backbones for AI-generation detection.",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "github-repo",
+      "name": "github-repo",
+      "description": "Anonymous code + manifest repository hosted via 4open.science.",
+      "contentUrl": "https://anonymous.4open.science/r/vidtide-anon-C0B8/",
+      "encodingFormat": "git+https",
+      "sha256": "main"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "metadata-jsonl",
+      "name": "metadata.jsonl",
+      "description": "M0 frozen-slice manifest. One JSON object per video record; 22,869 lines total.",
+      "containedIn": {
+        "@id": "github-repo"
+      },
+      "contentUrl": "manifests/M0/metadata.jsonl",
+      "encodingFormat": "application/jsonlines"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "split-train",
+      "name": "splits/train.jsonl",
+      "description": "Fine-tuning training split (7,957 records).",
+      "containedIn": {
+        "@id": "github-repo"
+      },
+      "contentUrl": "manifests/M0/splits/train.jsonl",
+      "encodingFormat": "application/jsonlines"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "split-val",
+      "name": "splits/val.jsonl",
+      "description": "Fine-tuning validation split.",
+      "containedIn": {
+        "@id": "github-repo"
+      },
+      "contentUrl": "manifests/M0/splits/val.jsonl",
+      "encodingFormat": "application/jsonlines"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "split-test",
+      "name": "splits/test.jsonl",
+      "description": "5K-real / 5K-fake gap-evaluation slice (1,999 records as released; the 5K/5K balanced view is constructed by `scripts/compute_gap.py`).",
+      "containedIn": {
+        "@id": "github-repo"
+      },
+      "contentUrl": "manifests/M0/splits/test.jsonl",
+      "encodingFormat": "application/jsonlines"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "videos",
+      "name": "videos",
+      "description": "One record per video clip in the M0 frozen slice. Video bytes are not included; recover them from `source_url` via `scripts/download_videos.py`.",
+      "key": {
+        "@id": "videos/id"
+      },
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "videos/id",
+          "name": "id",
+          "description": "Stable per-clip identifier (32 hex characters).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/source_platform",
+          "name": "source_platform",
+          "description": "Origin platform: youtube | bilibili | reddit | showcase.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "source_platform"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/source_url",
+          "name": "source_url",
+          "description": "Original platform URL (used at re-download time).",
+          "dataType": "sc:URL",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "source_url"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/source_id",
+          "name": "source_id",
+          "description": "Platform-native ID (e.g., Bilibili BV ID, YouTube video ID).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "source_id"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/label",
+          "name": "label",
+          "description": "Binary label: real | fake.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "label"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/tier_source",
+          "name": "tier_source",
+          "description": "Provenance tier: tier1_official_showcase | tier2_platform_tag | tier2_channel_whitelist | tier3_keyword_llm.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "tier_source"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/claimed_generator",
+          "name": "claimed_generator",
+          "description": "Declared generator identifier (e.g., kling21, sora2, veo3); null when not declared.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "claimed_generator"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/duration_sec",
+          "name": "duration_sec",
+          "description": "Clip duration in seconds.",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "duration_sec"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/resolution_w",
+          "name": "resolution_w",
+          "description": "Width in pixels (null when probe metadata is unavailable).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "resolution_w"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/resolution_h",
+          "name": "resolution_h",
+          "description": "Height in pixels (null when probe metadata is unavailable).",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "resolution_h"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/fps",
+          "name": "fps",
+          "description": "Frame rate in frames per second (null when probe metadata is unavailable).",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "fps"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/file_size_bytes",
+          "name": "file_size_bytes",
+          "description": "Video file size in bytes at original crawl time.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "file_size_bytes"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/sha256",
+          "name": "sha256",
+          "description": "Content hash captured at original crawl time (used to detect platform re-encoding at re-download).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "sha256"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/title",
+          "name": "title",
+          "description": "Uploader-provided title.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "title"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/content_tags",
+          "name": "content_tags",
+          "description": "JSON-encoded list of uploader-provided content tags.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "content_tags"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/published_at",
+          "name": "published_at",
+          "description": "Original platform publish timestamp (may be empty when not exposed by platform API).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "published_at"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "videos/crawled_at",
+          "name": "crawled_at",
+          "description": "Timestamp at which this record was added to the VidTide pipeline.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "metadata-jsonl"
+            },
+            "extract": {
+              "column": "crawled_at"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
