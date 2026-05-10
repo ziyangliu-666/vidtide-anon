@@ -1,0 +1,17 @@
+[project]
+name = "vidtide_anon"
+version = "0.1.0"
+description = "VidTide — an in-the-wild living benchmark for AI-generated video detection (anonymous review release)"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["server*", "crawlers*", "filters*", "dedup*", "pipeline*", "release*", "eval*"]

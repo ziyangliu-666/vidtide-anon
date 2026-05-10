@@ -1,54 +1,387 @@
-# VidTide pipeline configuration template.
-# Copy to `pipeline.yaml` and edit per environment. All keys are dashboard-editable
-# in the live demo; this file is the source of truth for headless / CI runs.
+version: "2026.04"
+month: "2026-04"
 
-crawlers:
-  youtube:
-    enabled: true
-    max_videos: 200
-    queries:
-      - "AI generated video"
-      - "made with Sora"
-      - "Veo 3"
-      - "Kling 2.1"
-    duration_range_sec: [3, 60]
-  bilibili:
-    enabled: true
-    max_videos: 500
-    queries:
-      - "AI 生成视频"
-      - "可灵 AI"
-      - "即梦 AI"
-    require_argue_info_tag: true
-    duration_range_sec: [3, 120]
-  reddit:
-    enabled: true
-    subreddits: [aivideo, sora, StableDiffusion]
-    max_videos: 100
-  showcase:
-    enabled: true
-    galleries: [pika, kling, runway, dreamina]
+data_dir: "data"
+db_path: "data/vidtide.db"
+video_dir: "data/videos"
 
-filters:
+# Pipeline: crawl → filter → human review (Yes/No) → freeze slice
+# Detection is NOT in the pipeline — detectors are evaluated on frozen slices
+
+crawl:
+  platforms:
+    # tier1 — official vendor showcase galleries. One-shot seed source:
+    # marketing pages have ~5-15 demos each, dedup catches re-runs. Highest
+    # provenance precision in the pipeline.
+    showcase:
+      enabled: true
+      tier: 1
+      max_videos: 80
+      respect_robots: true
+      cache_dir: "data/cache/showcase"
+      sources:
+        - key: openai_sora2
+          model: sora2
+          url: "https://openai.com/index/sora-2/"
+          parser: generic_video
+        - key: deepmind_veo
+          model: veo3
+          url: "https://deepmind.google/technologies/veo/"
+          parser: generic_video
+        - key: runway_gen4
+          model: runway-gen4
+          url: "https://runwayml.com/research/introducing-runway-gen-4"
+          parser: generic_video
+        - key: openai_sora_index
+          model: sora2
+          url: "https://openai.com/sora/"
+          parser: generic_video
+
+    youtube:
+      enabled: true
+      tier: 2
+      max_videos: 600
+      # Model-name-specific queries beat generic "ai video" on precision.
+      search_queries:
+        - "made with Sora 2"
+        - "Veo 3 generated"
+        - "Veo 3 short film"
+        - "Kling 2.1 ai video"
+        - "Kling AI movie"
+        - "Runway Gen-4 generated"
+        - "Runway Gen-3 short film"
+        - "Hailuo MiniMax ai video"
+        - "Hunyuan Video ai generated"
+        - "Luma Dream Machine ai"
+        - "Pika 2.0 ai video"
+        - "Wan 2.1 ai video"
+        - "MiniMax Hailuo 02"
+        - "Sora 2 short film"
+        - "AI generated short film 2026"
+      # Channel whitelist (L3 pass in the crawl funnel). Latest uploads from
+      # each of these are ingested without the AI-keyword gate — the channel
+      # itself is the AI signal. yt-dlp accepts @handles directly.
+      #
+      # Each entry should be a canonical /videos tab URL so yt-dlp walks the
+      # uploads feed rather than the channel home (which mixes shorts / lives
+      # / posts and costs extra API calls).
+      channels:
+        # --- Vendor official (showcase + announcement feeds) ---
+        # Handles validated via yt-dlp — @Google_DeepMind 404s (correct is
+        # @googledeepmind), @LumaAI / @PikaLabs return 0 entries (correct are
+        # @lumalabs / @pika_labs with /videos tab).
+        - "https://www.youtube.com/@OpenAI/videos"
+        - "https://www.youtube.com/@googledeepmind/videos"
+        - "https://www.youtube.com/@runwayml/videos"
+        - "https://www.youtube.com/@lumalabs/videos"
+        - "https://www.youtube.com/@pika_labs/videos"
+        - "https://www.youtube.com/@StabilityAI/videos"
+        - "https://www.youtube.com/@Kling_ai/videos"
+        - "https://www.youtube.com/@MiniMax-AI/videos"
+        - "https://www.youtube.com/@HailuoAI/videos"
+        - "https://www.youtube.com/@TencentHunyuan/videos"
+        - "https://www.youtube.com/@AlibabaCloud/videos"
+        # --- Prosumer AI video creators ---
+        # @TheAIAdvantage returns 0 entries (renamed/inactive) — replaced
+        # with @MattVidPro which is confirmed working.
+        - "https://www.youtube.com/@CuriousRefuge/videos"
+        - "https://www.youtube.com/@TheoreticallyMedia/videos"
+        - "https://www.youtube.com/@mreflow/videos"
+        - "https://www.youtube.com/@MattVidPro/videos"
+        - "https://www.youtube.com/@aiexplained-official/videos"
+        - "https://www.youtube.com/@Wesroth/videos"
+        - "https://www.youtube.com/@AISearch/videos"
+        - "https://www.youtube.com/@FutureToolsAI/videos"
+        - "https://www.youtube.com/@PromptMuse/videos"
+        - "https://www.youtube.com/@bycloudAI/videos"
+        - "https://www.youtube.com/@TheoryofGood/videos"
+        - "https://www.youtube.com/@ai_for_film/videos"
+        - "https://www.youtube.com/@OliverFox/videos"
+        - "https://www.youtube.com/@MartinNebelong/videos"
+        - "https://www.youtube.com/@AIvision_official/videos"
+        # --- Round 2: research-agent-verified AI video creators ---
+        - "https://www.youtube.com/@heyselcuk/videos"
+        - "https://www.youtube.com/@kavanthekid/videos"
+        - "https://www.youtube.com/@HiggsfieldAI/videos"
+        - "https://www.youtube.com/@cyberjungle/videos"
+        - "https://www.youtube.com/@aivideoschool/videos"
+        - "https://www.youtube.com/@LumaLabsAI/videos"
+        - "https://www.youtube.com/@ViggleAI/videos"
+        - "https://www.youtube.com/@MastersOfProphecy/videos"
+        - "https://www.youtube.com/@Vidu-AI/videos"
+        - "https://www.youtube.com/@metapuppet/videos"
+        - "https://www.youtube.com/@Midjourney/videos"
+        - "https://www.youtube.com/@AIFilmmaker/videos"
+        - "https://www.youtube.com/@fictionalfilmsai/videos"
+        - "https://www.youtube.com/@HaiperAI/videos"
+        - "https://www.youtube.com/@kaiberai/videos"
+      channel_video_limit: 30  # latest N uploads per channel per run
+      channel_max_duration: 600  # permissive window for whitelisted channels
+      min_duration: 3
+      max_duration: 60
+    bilibili:
+      enabled: true
+      tier: 2
+      max_videos: 1500
+      # Bilibili crawler now uses the direct search API (pubdate-sorted,
+      # paginated ~1000 results/query) instead of yt-dlp bilisearch. Much
+      # higher throughput and freshness. Model-name queries give the best
+      # precision for the "fake" tier-2 label.
+      search_queries:
+        - "可灵AI视频"
+        - "即梦AI视频"
+        - "Sora 2 视频"
+        - "veo3 视频"
+        - "runway gen4"
+        - "通义万相 AI"
+        - "Hunyuan Video AI"
+        - "AIGC 视频作品"
+      pages_per_query: 3       # 3 pages × page_size = max 150 results/query
+      page_size: 50
+      exclude_tutorials: true  # drop titles containing 教程/教学/入门/tutorial etc.
+      exclude_ai_music: true   # drop Suno covers / AI翻唱 / AI music competitions
+      exclude_deepfake: true   # drop 换脸/deepfacelab/roop face-swap content
+      min_duration: 3
+      max_duration: 60
+
+    # Real-class negatives, content-matched to bilibili fake side. Pre-2023
+    # cutoff (before platform AI-disclosure shipped) means argue_msg check
+    # is unnecessary — temporal priority guarantees absence. URL-only mode;
+    # thumbnails + mp4 fetched later by scripts/batch_download.py.
+    bilibili_real:
+      enabled: true
+      tier: 1
+      max_videos: 1000
+      pages_per_query: 5
+      page_size: 50
+      min_duration: 3
+      max_duration: 120
+      exclude_tutorials: true
+    reddit:
+      enabled: true
+      tier: 2
+      max_videos: 600
+      # Expanded AI-video subreddit whitelist. Posts on these subs auto-count
+      # as AI-generated (community norm) and bypass the keyword gate — this
+      # is the L3 pass of the crawl funnel. Add any whitelisted sub to BOTH
+      # `subreddits` (so we actually crawl it) and `ai_subreddits` (so the
+      # keyword gate is skipped). By default the crawler trusts every sub in
+      # `subreddits` as AI unless `ai_subreddits` is set explicitly.
+      subreddits:
+        # --- Primary AI video subs (community norm = AI generated) ---
+        - "aivideo"
+        - "sora"
+        - "kling"
+        - "runwayml"
+        - "pikalabs"
+        - "lumalabs"
+        - "StableVideoAI"
+        - "hailuo_ai"
+        - "Hunyuan_Video"
+        - "AI_VideoGeneration"
+        - "MiniMaxAI"
+        - "WanAI"
+        - "GenerativeAI"
+        - "aiArt"
+        - "aiAnimations"
+        - "Veo3"
+        - "Sora2"
+        - "MidjourneyVideo"
+        - "deeplearning"
+        - "PromptCraft"
+        # --- Round 2: AI-video-adjacent subs with high signal ---
+        # Dropped broad discussion/image subs that leaked non-video-gen
+        # content in as "fake": MachineLearning (research papers, style
+        # transfer demos from 2020), Futurology / OpenAI / ChatGPT /
+        # artificial / ArtificialIntelligence / singularity / deeplearning
+        # (general chat, mostly text), dalle / aiArt / StableDiffusion
+        # (still images, not video), DeepFakesSFW (face-swaps predate
+        # generative video and are a different class), MediaSynthesis
+        # (broad, pre-2023 heavy). An auto-whitelist on those subs is
+        # a false-positive factory — see the 2020 "cartoonization AI"
+        # post that slipped through. The `published_after` cutoff in
+        # reddit.py (default 2023-01-01) is a second line of defense.
+        - "deforum"
+        - "comfyui"
+        - "midjourney"
+        - "AIFilmmaking"
+        - "StableVideoDiffusion"
+        - "LumaAI"
+        - "HailuoAI_"
+        - "aigeneratedvideo"
+        - "Kling_ai"
+        # --- Round 3: tool-specific subs (highest label trust) ---
+        - "VEO3"
+        - "KLINGAIVideo"
+        - "haiper"
+        - "pixverse"
+        - "Viggle_AI"
+        - "viduai"
+        - "DomoAI"
+        - "Kaiber"
+        - "CogVideo"
+        - "Seedance_AI"
+        - "HiggsfieldAI"
+        - "GenAI4all"
+        - "leonardoai"
+        # --- Round 3: AI filmmaking / showcase subs ---
+        - "aifilmmaking"
+        - "aifilm"
+        - "AIfilms"
+        - "AI_Film_and_Animation"
+        - "AIGeneratedVideo"
+        - "AIVideos_showcase"
+        - "GenerativeVideo"
+        - "aitext2video"
+        - "aianime"
+      # Queries are only used as a *fallback* once /new has been exhausted;
+      # with a dense whitelist of AI-dedicated subs, these rarely fire.
+      search_queries:
+        - "sora 2"
+        - "veo 3"
+        - "kling 2.1"
+        - "runway gen-4"
+        - "hailuo 02"
+        - "wan 2.1"
+        - "hunyuan video"
+        - "AI generated video"
+        - "AI short film"
+        - "AI animation"
+      min_duration: 3
+      max_duration: 120
+
+    douyin:
+      enabled: true
+      tier: 2
+      max_videos: 500
+      # Generic queries — Douyin's AI label (深度合成标识) is the gate,
+      # same regulatory basis as bilibili's argue_msg. No need for
+      # AI-specific keywords.
+      search_queries:
+        - "换脸"
+        - "老照片"
+        - "变装"
+        - "特效"
+        - "短片"
+        - "鬼畜"
+        - "动画"
+        - "科幻"
+        - "古风"
+        - "修复"
+        - "MV"
+        - "整活"
+        - "名场面"
+        - "恐龙"
+        - "宇宙"
+        - "历史"
+        - "武侠"
+        - "搞笑"
+        - "三国"
+        - "西游记"
+      pages_per_query: 5
+      page_size: 20
+      min_duration: 3
+      max_duration: 600
+    kuaishou:
+      enabled: true
+      tier: 2
+      max_videos: 500
+      # Same generic-query + AI-label-gate strategy as douyin.
+      search_queries:
+        - "换脸"
+        - "老照片"
+        - "变装"
+        - "特效"
+        - "短片"
+        - "鬼畜"
+        - "动画"
+        - "科幻"
+        - "古风"
+        - "修复"
+        - "MV"
+        - "整活"
+        - "名场面"
+        - "搞笑"
+        - "历史"
+        - "武侠"
+        - "三国"
+        - "西游记"
+        - "宇宙"
+        - "恐龙"
+      pages_per_query: 5
+      min_duration: 3
+      max_duration: 600
+
+filter:
   quality:
-    min_resolution: [480, 360]   # [w, h]
+    # min_resolution = HD long-edge threshold; min_short_edge keeps portrait
+    # (576x1024 TikTok-style) clips viable while still excluding tiny thumbs.
+    min_resolution: 720
+    min_short_edge: 400
     min_duration_sec: 3
-    max_duration_sec: 120
-    min_fps: 12
+    # Upper cap now lets whitelisted-channel showcases (1-5 minute AI short
+    # films on channels like @CuriousRefuge) through alongside the shorter
+    # keyword-search hits. The channel whitelist is the AI signal for these,
+    # so trusting them at longer durations is fine.
+    max_duration_sec: 300
   tag:
-    tiers_accepted: [1, 2, 3]
-  llm:
+    accept_tiers: [1, 2, 3]
+  # Gate by claimed_generator. Lenient (default) only rejects the explicit
+  # blacklist of known pre-2025 models; strict mode requires whitelist match.
+  model_whitelist:
     enabled: true
-    model: gpt-4o-mini
+    strict: false
+    whitelist:
+      - veo3
+      - veo2
+      - sora2
+      - kling21
+      - kling2
+      - runway-gen4
+      - runway-gen3
+      - pika2
+      - hailuo
+      - hunyuan
+      - wan21
+      - ltxv
+      - mochi1
+      - dreamina3
+      - luma
+    blacklist:
+      - sora1
+      - runway_gen2
+      - pika1
+      - stable_video_diffusion
+      - animatediff
+      - zeroscope
+      - modelscope_t2v
+      - kling1
+  llm:
+    enabled: false
+    model: "gpt-4o-mini"
     confidence_threshold: 0.7
+    # api_key from env OPENAI_API_KEY
 
+# Cross-platform deduplication (REQUIREMENTS.md R1). Runs after filter
+# in `full` local-mode flows. Switch `captioner` to "stub" for CI or
+# GPU-less dev — lets the schema/pipeline paths get exercised without
+# downloading a 4GB model.
 dedup:
-  encoder: clip_vit_b32
-  num_keyframes: 8
-  cosine_threshold: 0.92
-  prefer_higher_tier: true
+  enabled: true
+  # CLIP image embedding directly (not caption-based). Manual testing showed
+  # BLIP+MiniLM only catches byte-identical thumbnails, while CLIP stays
+  # > 0.87 cosine through JPEG quality changes, resolution halving, and
+  # timestamp shifts, with < 0.55 for genuinely different videos.
+  embedder: "clip"          # "clip" (CLIP ViT-B/32 image embedding)
+  cosine_threshold: 0.85    # validated: 0.85 gives clean gap, 0 false positives
+  thumbnails_root: "data/thumbnails"
 
-publish:
-  hf_repo: <anonymised-for-double-blind>
-  monthly_slice_prefix: "M"
-  redistribute_video_files: false   # metadata + download script only
+# Inline mp4 download + re-encode + local blob write. Runs after dedup
+# on canonical rows only (duplicates don't need their own copy). Writes
+# to data/blobs/ via LocalBlobStorage. Monthly HF publish then uploads
+# these files and rewrites `blob_url` to the HF raw URL.
+download:
+  enabled: true
+  blob_dir: "data/blobs"    # LocalBlobStorage root
+  work_dir: "/tmp/vidtide-dl"
+  max_duration_sec: 600     # yt-dlp duration filter

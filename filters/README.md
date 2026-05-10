@@ -1,20 +1,19 @@
 # Filters
 
-Sequential filter stack applied to candidates emitted by the crawlers.
+Sequential filter stack applied to candidates emitted by the crawlers. All
+implementations live in [`server/filter/`](../server/filter/) and are
+re-exported here.
 
-| Filter | Purpose | Configurable |
-|--------|---------|--------------|
-| `quality_filter.py` | Drops clips below resolution / duration / fps thresholds | min_resolution, min/max_duration, min_fps |
-| `tag_filter.py` | Keeps only the configured label tiers (T1 / T2 / T3) | tiers_accepted |
-| `llm_filter.py` | GPT-4o title/description verification — separates *actual* AI videos from *tutorials about* AI | model, confidence_threshold, on/off |
+| Filter | Module | Purpose |
+|--------|--------|---------|
+| Quality | `server/filter/quality_filter.py` | Drops clips below resolution / duration / fps thresholds (default: ≥720p, 3–300 s, ffprobe structural validation) |
+| Tag-tier | `server/filter/tag_filter.py` | Routes videos by configured label tier (T1 / T2 / T3) |
+| LLM verification | `server/filter/llm_filter.py` | GPT-4o title/description verification — separates *actual* AI videos from *tutorials about* AI |
+| Generator whitelist | `server/filter/model_whitelist_filter.py` | Drops clips whose `claimed_generator` is outside the paper's named-generator pool |
 
-Each implements:
+Each implements `BaseFilter` (`server/filter/base.py`) — a single
+`apply(video, config) -> FilterDecision` method. Per-filter config keys
+are documented inline at the top of each module.
 
-```python
-class BaseFilter:
-    name: str
-    def apply(self, video: CrawledVideo, config: dict) -> FilterDecision:
-        ...
-```
-
-> **Skeleton notice.** Implementations follow in the next upload batch (see top-level `README.md`).
+The order, thresholds, and on/off switches are wired up in
+`config/pipeline.yaml.example`.
