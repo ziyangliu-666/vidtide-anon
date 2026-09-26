@@ -18,8 +18,8 @@ Following Gebru et al., *Datasheets for Datasets* (CACM 2021), and the NeurIPS 2
 - **Per-instance fields.** `id`, `source_platform`, `source_url`, `source_id`, `label` (`real`/`fake`), `claimed_generator`, `label_source` (evidence tier), `duration_sec`, `resolution_w`, `resolution_h`, `fps`, `file_size_bytes`, `blob_sha256` (computed at crawl time, stored for integrity checks at re-download time), `title`, `content_tags`, `published_at`, `crawled_at`.
 - **Labels.** Three-tier provenance taxonomy:
   - **T1** — known provenance: official generator-showcase galleries and imported real datasets (81 clips in M0).
-  - **T2** — platform evidence: AI-disclosure tags and curated AI channels for generated clips (YouTube AI disclosure, Bilibili `argue_info`), and the absence of an AI tag for platform reals (21,359 clips).
-  - **T3** — community posts whose titles and descriptions are verified by an LLM (64 clips).
+  - **T2** — platform evidence: Bilibili `argue_info` AI-disclosure tags and curated AI channels and subreddits (YouTube, Reddit) for generated clips, and the absence of an AI tag for platform reals (21,359 clips).
+  - **T3** — YouTube and Bilibili posts whose titles and descriptions are verified by an LLM (64 clips).
 - **Splits.** 9,956-clip class-balanced evaluation pool (`gap_test.jsonl`, 4,972 real / 4,984 generated) and its 7,957 / 1,999 train / test split.
 
 ## 3. Collection process

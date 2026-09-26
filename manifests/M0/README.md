@@ -32,8 +32,8 @@ Evidence tiers (paper Sec. 4): Tier 1 = 81 (`tier1_gallery`); Tier 2 = 21,359
 (`tier3_llm`). The `label_source` values keep their collection-time prefixes.
 
 Split files are self-contained: each record carries `id`, `label`, and
-`source_url`. 3,179 of the 9,956 `gap_test.jsonl` records, including all
-198 Kinetics-400 reals, have no entry in `metadata.jsonl`.
+`source_url`. 3,179 `gap_test.jsonl` records, including the 198 Kinetics-400
+reals, are listed only in the split files.
 
 ## Schema (`metadata.jsonl`, one JSON object per line)
 
