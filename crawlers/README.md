@@ -9,7 +9,7 @@ README's tree (`from crawlers import BilibiliCrawler` works).
 |--------|----------|--------|-------------------|
 | `server/crawler/youtube.py` | YouTube | `yt-dlp` search + AI-disclosure tag | T2 — mandatory AI disclosure (since 2024) |
 | `server/crawler/bilibili.py` | Bilibili (fakes) | `yt-dlp` `bilisearch:` + Chinese AI keywords + `argue_info` AI tag | T2 — China AI labelling regulation (Sept 2025) |
-| `server/crawler/bilibili_real.py` | Bilibili (reals) | Channel whitelist + `argue_info` absence | T1 — platform-absence-of-AI-tag |
+| `server/crawler/bilibili_real.py` | Bilibili (reals) | Channel whitelist + `argue_info` absence | T2 — absence of AI tag (weaker evidence) |
 | `server/crawler/reddit.py` | Reddit | Public JSON API (r/aivideo, r/sora, r/StableDiffusion, …) | T2/T3 — subreddit context + LLM verification |
 | `server/crawler/showcase.py` | Official galleries (Pika, Kling, Runway, Dreamina, Veo, Sora, …) | Per-vendor scrapers | T1 — definitionally AI-generated |
 | `server/crawler/douyin.py`, `kuaishou.py` | (experimental) Douyin / Kuaishou | yt-dlp + tag detection | T2 |

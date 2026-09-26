@@ -14,13 +14,13 @@ Following Gebru et al., *Datasheets for Datasets* (CACM 2021), and the NeurIPS 2
 ## 2. Composition
 
 - **Instances.** Each instance is a single video clip, identified by `(source_platform, source_id)`, accompanied by a `metadata.jsonl` record (see schema below).
-- **Total instances (M0 frozen slice).** 22,869 clips across YouTube, Bilibili, Reddit, and official model showcase galleries.
-- **Per-instance fields.** `id`, `source_platform`, `source_url`, `source_id`, `label` (`real`/`fake`), `claimed_generator`, `tier_source` (T1/T2/T3), `duration_sec`, `resolution_w`, `resolution_h`, `fps`, `file_size_bytes`, `sha256` (computed at crawl time, stored for integrity checks at re-download time), `title`, `content_tags`, `published_at`, `crawled_at`.
+- **Total instances (M0 frozen slice).** 21,504 clips (11,502 generated / 10,002 real) across Bilibili (17,154), Reddit (3,695), YouTube (574), and official model showcase galleries (81).
+- **Per-instance fields.** `id`, `source_platform`, `source_url`, `source_id`, `label` (`real`/`fake`), `claimed_generator`, `label_source` (evidence tier), `duration_sec`, `resolution_w`, `resolution_h`, `fps`, `file_size_bytes`, `blob_sha256` (computed at crawl time, stored for integrity checks at re-download time), `title`, `content_tags`, `published_at`, `crawled_at`.
 - **Labels.** Three-tier provenance taxonomy:
-  - **T1** — official generator-showcase galleries (Pika, Kling, Runway, ...). Treated as 100% AI-generated.
-  - **T2** — platform AI-disclosure tags (YouTube AI-disclosure since 2024, Bilibili `argue_info` tag enforcing the China AI labelling regulation since Sept 2025, TikTok C2PA).
-  - **T3** — keyword match in title/description with LLM-assisted semantic verification.
-- **Splits.** 5K real / 5K fake gap-evaluation slice (paper Table~`tab:gap`); 7,957 / 1,999 fine-tuning train / test split (paper Table~`tab:finetune`).
+  - **T1** — known provenance: official generator-showcase galleries and imported real datasets (81 clips in M0).
+  - **T2** — platform evidence: AI-disclosure tags and curated AI channels for generated clips (YouTube AI disclosure, Bilibili `argue_info`), and the absence of an AI tag for platform reals (21,359 clips).
+  - **T3** — community posts whose titles and descriptions are verified by an LLM (64 clips).
+- **Splits.** 9,956-clip class-balanced evaluation pool (`gap_test.jsonl`, 4,972 real / 4,984 generated) and its 7,957 / 1,999 train / test split.
 
 ## 3. Collection process
 

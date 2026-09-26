@@ -12,16 +12,10 @@ evaluation scripts that reproduce every number in the paper:
 4. **Evaluation scripts** — linear-probe (LP) and full fine-tune (FT) trainers, Table 1 (GenVideo gap) reproducer, per-generator / per-platform breakdown tools, and the `extract_paper_numbers.py` driver that emits every number in the paper as JSON.
 5. **Datasheet & reproducibility docs** — see `DATASHEET.md`, `docs/REPRODUCIBILITY.md`, and the Croissant 1.0 metadata file `croissant.json`.
 
-> **M0 manifest count.** The shipped `manifests/M0/metadata.jsonl` contains
-> **21,505** records (real 10,002 / fake 11,503), exported from the
-> pre-submission database snapshot dated 2026-04-15. The paper datasheet
-> reports a slightly larger raw M0 pool of **22,869** records (real 12,767 /
-> fake 10,102) reflecting the full crawl window through to the submission
-> cut-off; the ~6 % delta is dominated by Bilibili `real` clips that were
-> hard-deleted by their uploaders between 2026-04-15 and submission and is
-> documented in `manifests/M0/README.md`. **All headline experiments use
-> the 9,956-clip class-balanced gap-evaluation slice
-> (`manifests/M0/splits/gap_test.jsonl`), which is reproduced exactly here.**
+> **M0 manifest.** `manifests/M0/metadata.jsonl` contains **21,504** records
+> (11,502 generated / 10,002 real), matching the counts reported in the paper.
+> Headline experiments use the 9,956-clip evaluation pool in
+> `manifests/M0/splits/gap_test.jsonl` and its 7,957 / 1,999 train / test split.
 
 ---
 
@@ -66,8 +60,8 @@ evaluation scripts that reproduce every number in the paper:
 │
 ├── manifests/
 │   └── M0/
-│       ├── metadata.jsonl     ← 21,505 records (id, source_url, label,
-│       │                        generator, tier_source, …)
+│       ├── metadata.jsonl     ← 21,504 records (id, source_url, label,
+│       │                        generator, label_source, …)
 │       ├── splits/
 │       │   ├── train.jsonl    ← 7,957 LP/FT training records
 │       │   ├── test.jsonl     ← 1,999 LP/FT test records

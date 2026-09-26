@@ -8,36 +8,32 @@ are redistributed (see top-level `LICENSE` and `../../docs/OPT_OUT.md`).
 
 | File | Records | Used in |
 |------|---------|---------|
-| `metadata.jsonl` | 21,505 | Datasheet (Sec. 4 of paper) |
-| `splits/train.jsonl` | 7,957 | LP / FT training (paper Table 2) |
-| `splits/test.jsonl` | 1,999 | LP / FT evaluation (paper Table 2) |
-| `splits/gap_test.jsonl` | 9,956 | Static-benchmark gap (paper Table 1) |
+| `metadata.jsonl` | 21,504 | M0 composition (paper Sec. 3.2, 4; Tables 2--3) |
+| `splits/train.jsonl` | 7,957 | LP / FT training |
+| `splits/test.jsonl` | 1,999 | LP / FT evaluation |
+| `splits/gap_test.jsonl` | 9,956 | Evaluation pool for existing detectors |
 
 The two LP/FT splits sum to 9,956 — the same population as `gap_test.jsonl`
 — and are a stratified-by-(label × generator) 80/20 split of it.
 
-## Count delta vs the paper datasheet
+## Composition
 
-The paper's appendix Table `tab:m0_dataflow` reports a Raw M0 pool of
-**22,869 records (real 12,767 / fake 10,102)**. The shipped manifest
-contains **21,505 records (real 10,002 / fake 11,503)**. The breakdown
-of the ~6 % delta:
+| | Clips |
+|---|---|
+| Total | 21,504 (11,502 generated / 10,002 real) |
+| Bilibili | 17,154 (7,152 generated / 10,002 real) |
+| Reddit | 3,695 generated |
+| YouTube | 574 generated |
+| Official galleries (`showcase`) | 81 generated |
 
-* The shipped manifest is exported from the most recent **pre-submission
-  database snapshot** (2026-04-15). About 1.4 k Bilibili `real` clips were
-  hard-deleted by their original uploaders between 2026-04-15 and the
-  submission cut-off and are therefore no longer recoverable; another
-  ~1.3 k `fake` clips were added after the snapshot.
-* The 9,956 gap-eval slice and the 7,957 / 1,999 LP/FT splits are
-  reproduced **exactly** — every clip ID matches the IDs scored in
-  `bench_5k_*_scores.jsonl` and counted in
-  `extract_paper_numbers.py`. **All headline numbers in the paper are
-  reproducible from these splits.**
+Evidence tiers (paper Sec. 4): Tier 1 = 81 (`tier1_gallery`); Tier 2 = 21,359
+(`tier2_platform_tag` 7,134, `tier2_channel_whitelist` 4,223, and
+`tier1_platform_absence` 10,002 untagged platform reals); Tier 3 = 64
+(`tier3_llm`). The `label_source` values keep their collection-time prefixes.
 
-For full reconstruction of the original 22,869 raw pool the live
-crawl-and-publish pipeline can be re-run from the codebase in this repo;
-because the underlying source platforms (especially Bilibili) keep removing
-content, the resulting count will drift.
+Split files are self-contained: each record carries `id`, `label`, and
+`source_url`. 3,179 of the 9,956 `gap_test.jsonl` records, including all
+198 Kinetics-400 reals, have no entry in `metadata.jsonl`.
 
 ## Schema (`metadata.jsonl`, one JSON object per line)
 
