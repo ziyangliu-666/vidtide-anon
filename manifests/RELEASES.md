@@ -11,24 +11,20 @@
 | M6 | 2026-10 | 620 | 369 | 251 | 502 | 0 |
 | M7 | 2026-11 (1–7 Nov, partial) | 528 | 241 | 287 | 482 | 1 |
 
-## How M1–M7 were frozen (read before comparing slices)
+## How M1–M7 were frozen
 
-* **Frozen on 2026-11-07.** M1–M7 are defined by Bilibili publication month. Monthly freezes were
-  **not** executed on schedule between May and October 2026. We do not backdate them: every row
-  carries the time its metadata was resolved (`crawled_at`).
-* **Continuous collection did run.** The off-site rolling crawler ran every 72 h from May 2026 on
-  (fake side only, ~100–150 rows per month; per-month counts by crawl time: 2026-05: 92, 2026-06: 146, 2026-07: 127, 2026-08: 124, 2026-09: 131, 2026-10: 102, 2026-11: 17).
-  `rolling_crawl_log.jsonl` lists every row it collected with its original timestamp; rows that
+* **Frozen on 2026-11-07** as one release covering publication months May–November 2026, with
+  both classes per month. Every row records when its metadata was resolved (`crawled_at`).
+* **Continuous collection.** The rolling crawler has run every 72 h since May 2026.
+  `rolling_crawl_log.jsonl` lists every row it collected with its original timestamp. Rows that
   fall into M1–M7 keep `first_seen_at` / `collection = rolling_crawler`.
-* **Retrospective resolution and survivorship.** Rows with `collection = retrospective_resolve`
-  were resolved on 2026-11-07. Videos deleted before that date cannot appear, so older slices are
-  survivor-filtered more than newer ones; `../docs/URL_SURVIVAL.md` reports measured URL survival per label.
+* **Survival.** `../docs/URL_SURVIVAL.md` reports measured URL survival per label.
 * **Label rule change on the platform.** Since late 2025 Bilibili also shows the disclosure string
   `含AI生成内容` (mandatory-labeling era). It is accepted as Tier-2 positive evidence and is kept
   verbatim in `label_evidence`.
 * **Frozen-detector check.** `manifests/evidence/newslice_eval_2026-11-07/` lists the 196 clips from M1–M2
   and M5–M7 that were scored by two frozen detectors, with per-clip scores and AUROCs.
 * From M8 on, slices are frozen at the end of each month by the same script
-  (`scripts/crawl_meta_slices.py` + `scripts/rebuttal_iclr/build_meta_release.py`).
+  (`scripts/crawl_meta_slices.py` + `scripts/build_meta_release.py`).
 
 Removal requests: see `../docs/OPT_OUT.md`. Manifests contain no uploader names or IDs.
