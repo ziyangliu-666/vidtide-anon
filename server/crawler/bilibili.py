@@ -602,7 +602,7 @@ def _check_platform_ai_label(session: requests.Session, bvid: str) -> bool:
         data = resp.json().get("data", {})
         argue_info = data.get("argue_info") or {}
         msg = argue_info.get("argue_msg", "") or ""
-        return any(s in msg for s in _AI_ARGUE_MSGS)
+        return any(s in msg for s in _AI_ARGUE_MSGS) or ("AI" in msg.upper() and ("生成" in msg or "合成" in msg))
     except (ValueError, KeyError):
         return False
 
