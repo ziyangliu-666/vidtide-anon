@@ -24,6 +24,8 @@
   verbatim in `label_evidence`.
 * **Frozen-detector check.** `manifests/evidence/newslice_eval_2026-11-07/` lists the 196 clips from M1–M2
   and M5–M7 that were scored by two frozen detectors, with per-clip scores and AUROCs.
+* **Month-by-month evaluation.** `manifests/evidence/newslice_monthly_2026-11-08/` holds per-clip
+  scores for 820 clips (about 118 per month) and the training-refresh experiment.
 * From M8 on, slices are frozen at the end of each month by the same script
   (`scripts/crawl_meta_slices.py` + `scripts/build_meta_release.py`).
 
