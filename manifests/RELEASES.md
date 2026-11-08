@@ -26,6 +26,9 @@
   and M5–M7 that were scored by two frozen detectors, with per-clip scores and AUROCs.
 * **Month-by-month evaluation.** `manifests/evidence/newslice_monthly_2026-11-08/` holds per-clip
   scores for 820 clips (about 118 per month) and the training-refresh experiment.
+* **Private lists.** Each release `Mk` also has `private_unlabeled.jsonl`: clips from the same
+  publication month, listed without labels. The leaderboard (`docs/SUBMIT.md`) scores submissions
+  on it. Its labels are released when ranking moves to a newer release.
 * From M8 on, slices are frozen at the end of each month by the same script
   (`scripts/crawl_meta_slices.py` + `scripts/build_meta_release.py`).
 
